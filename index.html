@@ -3,747 +3,361 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vaada and Associates — Invoice Generator</title>
+  <title>Vaada and Associates — Invoice</title>
   <style>
-    :root{
-      --accent:#3b82f6; /* soft blue */
-      --muted:#6b7280;
-      --card:#ffffff;
-      --bg:#f3f4f6;
-      --radius:12px;
-      --max-width:1100px;
-    }
-    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    body{background:var(--bg);margin:0;padding:24px;color:#0f172a}
-    .container{max-width:var(--max-width);margin:0 auto}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    header h1{margin:0;font-size:20px;color:#0f172a}
-    header small{display:block;font-size:12px;color:var(--muted)}
-    .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-    .flex{display:flex;gap:12px;align-items:center}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    input[type="text"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
-      width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ee;background:white;font-size:14px;
-    }
-    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-    .two{flex:1 1 220px}
-    .three{flex:1 1 140px}
-    .logo-preview{width:140px;height:60px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed #e6e9ee;overflow:hidden;background:#fff}
-    .logo-preview img{max-width:100%;max-height:100%}
-    .muted{color:var(--muted);font-size:13px}
-    /* Items table */
+    /* Classic invoice style similar to provided sample */
+    :root{--paper:#fff;--border:#000;--muted:#444;--maxw:900px}
+    body{background:#f6f6f6;font-family: "Times New Roman", Georgia, serif;padding:18px;color:#111}
+    .wrap{max-width:var(--maxw);margin:0 auto;background:var(--paper);border:2px solid var(--border);padding:10px 14px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:6px;margin-bottom:8px}
+    .firm{font-weight:700;letter-spacing:1px}
+    .firm h2{margin:0;font-size:22px}
+    .firm .sub{font-size:13px;margin-top:4px}
+    .meta{text-align:right}
+    .meta .label{font-size:12px;color:var(--muted)}
+    .meta .val{font-weight:700}
+
+    .top-row{display:flex;justify-content:space-between;margin-top:8px}
+    .invoice-meta{border:1px solid var(--border);padding:6px;min-width:260px}
+    .invoice-meta .row{display:flex;justify-content:space-between;margin-bottom:6px}
+    .customer-line{border:1px solid var(--border);padding:8px;margin-top:10px;text-transform:uppercase;font-weight:700;letter-spacing:0.6px}
+
     table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{padding:8px;border-bottom:1px solid #eef2f6;text-align:left;font-size:14px}
-    th{background:#fbfdff;color:var(--muted);font-weight:600}
-    .qty, .rate, .amount{text-align:right}
-    .small-btn{padding:8px 10px;border-radius:8px;border:0;background:#eef2ff;color:var(--accent);cursor:pointer}
-    .danger{background:#fff0f0;color:#ef4444;border:1px solid #fee2e2}
-    .primary{background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:10px;cursor:pointer}
-    .secondary{background:#efefef;color:#374151;border:0;padding:10px 14px;border-radius:10px;cursor:pointer}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .totals{max-width:380px;margin-left:auto}
-    .totals .line{display:flex;justify-content:space-between;padding:8px 0}
-    .sticky-top{position:sticky;top:18px}
-    /* Saved invoices list */
-    .saved-list{max-height:300px;overflow:auto}
-    .saved-item{padding:8px;border-radius:8px;border:1px solid #eef2f6;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-    .note{font-size:13px;color:var(--muted)}
-    footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
-    /* Responsive */
-    @media (max-width:900px){
-      .sticky-top{position:static}
-      .totals{width:100%;margin-left:0}
-      .logo-preview{width:120px;height:52px}
+    table th, table td{border:1px solid var(--border);padding:6px}
+    table th{text-align:left;font-weight:700}
+    .tcenter{text-align:center}
+    .tright{text-align:right}
+    .muted{color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .btn{padding:8px 12px;border-radius:4px;border:1px solid #222;background:#fff;cursor:pointer}
+    .btn.primary{background:#111;color:#fff;border-color:#111}
+    .small{font-size:13px;padding:6px 8px}
+
+    /* Inputs */
+    input[type="text"], input[type="number"], select{font-family:inherit;padding:6px;border:1px solid #222;background:transparent}
+    input[type="number"]{text-align:right}
+    .no-outline:focus{outline:2px dashed #ddd}
+
+    .totals{margin-top:8px;display:flex;justify-content:flex-end}
+    .totals .box{width:320px;border-top:1px solid var(--border);padding-top:8px}
+    .totals .line{display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px dotted #999}
+    .bold{font-weight:700}
+
+    .footer{margin-top:16px;border-top:2px solid var(--border);padding-top:8px;display:flex;justify-content:space-between;align-items:center}
+    .signature{width:240px;text-align:center;border-top:1px solid #111;padding-top:6px;font-size:14px}
+    .thank{font-size:15px;font-weight:700}
+
+    /* Print: hide controls and page edges */
+    @media print{
+      body{background:white}
+      .controls, .save-note {display:none}
+      .wrap{border:0;padding:0;max-width:100%}
     }
-    /* Print styles: hide controls and beautify invoice for print */
-    @media print {
-      body{background:white;padding:0}
-      header, .controls, .saved-panel, .top-actions{display:none}
-      .card{box-shadow:none;border-radius:0;padding:0}
-      .container{max-width:100%;padding:0}
-      table th, table td{font-size:12px}
+
+    /* responsive */
+    @media (max-width:640px){
+      .top-row{flex-direction:column;gap:8px}
+      .invoice-meta{min-width:unset}
+      .totals .box{width:100%}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  <div class="wrap" id="invoiceWrap">
+    <!-- Header (locked firm details) -->
+    <div class="header">
+      <div class="firm">
+        <h2>VAADA AND ASSOCIATES</h2>
+        <div class="sub">GSTIN: AFBOA2040N1Z3</div>
+        <div class="sub">Raipur, C.G.</div>
+        <div class="sub">Contact: 7828780780</div>
+      </div>
+
+      <div class="meta">
+        <div class="label">Invoice No.</div>
+        <div class="val" id="invoiceNoPreview">INV-1</div>
+        <div style="height:10px"></div>
+        <div class="label">Date</div>
+        <div><input id="invoiceDate" type="date"></div>
+      </div>
+    </div>
+
+    <!-- Customer name blank for manual entry -->
+    <div class="customer-line">
+      CUSTOMER NAME: ___________________________________________
+    </div>
+
+    <!-- Items -->
+    <table aria-label="items">
+      <thead>
+        <tr>
+          <th style="width:6%">S. NO.</th>
+          <th style="width:54%">Item / Remark</th>
+          <th style="width:12%" class="tcenter">QTY</th>
+          <th style="width:14%" class="tright">RATE</th>
+          <th style="width:14%" class="tright">AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody">
+        <!-- rows dynamically inserted -->
+      </tbody>
+    </table>
+
+    <div class="controls">
+      <button id="addRow" class="btn small">+ Add Row</button>
+      <button id="clearRows" class="btn small">Clear Items</button>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <label class="muted">GST:</label>
+        <select id="gstRate" class="small">
+          <option value="0">No GST</option>
+          <option value="5">5%</option>
+          <option value="18" selected>18%</option>
+        </select>
+        <button id="savePrint" class="btn primary">Save &amp; Print</button>
+        <button id="reset" class="btn">Reset</button>
+      </div>
+    </div>
+
+    <!-- Totals box -->
+    <div class="totals">
+      <div class="box">
+        <div class="line"><div class="muted">Taxable Value</div><div id="taxableText" class="tright">₹0.00</div></div>
+        <div class="line"><div class="muted">CGST @ <span id="cgstRate">0</span>%</div><div id="cgstText" class="tright">₹0.00</div></div>
+        <div class="line"><div class="muted">SGST @ <span id="sgstRate">0</span>%</div><div id="sgstText" class="tright">₹0.00</div></div>
+        <div class="line bold" style="border-top:2px solid #000"><div>Total</div><div id="totalText" class="tright">₹0.00</div></div>
+      </div>
+    </div>
+
+    <div class="footer">
       <div>
-        <h1>Vaada and Associates</h1>
-        <small>Invoice Generator — Static • GitHub Pages</small>
+        <div class="muted">पुनः पधारें धन्यवाद !</div>
       </div>
-      <div class="flex">
-        <div style="text-align:right">
-          <div class="muted">Auto-increment Invoice #</div>
-          <div id="preview-invoice-no" style="font-weight:700;font-size:16px">INV-1</div>
-        </div>
-      </div>
-    </header>
-
-    <div class="card">
-      <div class="row" style="align-items:center">
-        <div style="flex:1">
-          <div class="row">
-            <div class="two">
-              <label>Firm Name</label>
-              <input id="firmName" type="text" value="Vaada and Associates">
-            </div>
-            <div class="two">
-              <label>Firm Address</label>
-              <input id="firmAddress" type="text" placeholder="Address, City, State - PIN">
-            </div>
-            <div class="three">
-              <label>Firm Email</label>
-              <input id="firmEmail" type="email" placeholder="info@vaada.in">
-            </div>
-            <div class="three">
-              <label>Firm GSTIN (optional)</label>
-              <input id="firmGstin" type="text" placeholder="12ABCDE1234F1Z5">
-            </div>
-          </div>
-        </div>
-
-        <div style="width:160px">
-          <label>Logo (optional)</label>
-          <div class="logo-preview" id="logoPreview">LOGO</div>
-          <input id="logoInput" type="file" accept="image/*" style="margin-top:8px">
-          <div style="margin-top:6px">
-            <button class="small-btn" id="removeLogoBtn">Remove</button>
-          </div>
-        </div>
-      </div>
-
-      <hr style="margin:18px 0;border:none;border-top:1px solid #eef2f6">
-
-      <!-- Invoice & Client -->
-      <div class="row">
-        <div style="flex:1">
-          <div class="row">
-            <div class="two">
-              <label>Invoice No</label>
-              <input id="invoiceNo" type="text" />
-            </div>
-            <div class="two">
-              <label>Date</label>
-              <input id="invoiceDate" type="date" />
-            </div>
-            <div class="two">
-              <label>Due Date</label>
-              <input id="dueDate" type="date" />
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <label>Bill To</label>
-            <input id="clientName" type="text" placeholder="Client name">
-            <div style="display:flex;gap:12px;margin-top:8px">
-              <input id="clientEmail" type="email" placeholder="Client email" style="flex:1">
-              <input id="clientGstin" type="text" placeholder="GSTIN (opt)" style="flex:1">
-            </div>
-            <textarea id="clientAddress" rows="3" style="margin-top:8px" placeholder="Client address"></textarea>
-          </div>
-        </div>
-
-        <div class="totals card sticky-top" style="padding:12px;box-shadow:none;border-radius:10px">
-          <div>
-            <label>GST Rate</label>
-            <select id="gstRate">
-              <option value="0">No GST</option>
-              <option value="5">5%</option>
-              <option value="18" selected>18%</option>
-            </select>
-          </div>
-
-          <div style="margin-top:12px">
-            <label>Notes</label>
-            <textarea id="notes" rows="4" placeholder="Thank you for your business. Payment due within 30 days."></textarea>
-          </div>
-
-          <div style="margin-top:12px">
-            <label>Signature / Authorized</label>
-            <div style="height:48px;border:1px dashed #e6e9ee;border-radius:8px;display:flex;align-items:center;justify-content:center" id="signatureLine">Signature</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Items -->
-      <div style="margin-top:16px">
-        <label>Items</label>
-        <div style="overflow:auto">
-          <table id="itemsTable" aria-label="Items">
-            <thead>
-              <tr>
-                <th style="width:40%">Item & Description</th>
-                <th style="width:12%">Qty</th>
-                <th style="width:16%">Rate</th>
-                <th style="width:16%">Amount</th>
-                <th style="width:16%"></th>
-              </tr>
-            </thead>
-            <tbody id="itemsBody">
-              <!-- rows added dynamically -->
-            </tbody>
-          </table>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-          <div>
-            <button id="addRowBtn" class="small-btn">+ Add row</button>
-            <button id="clearRowsBtn" class="small-btn danger">Clear items</button>
-          </div>
-
-          <div style="max-width:380px">
-            <div class="line" style="border-top:1px solid #eef2f6;padding-top:12px">
-              <div class="muted">Subtotal</div>
-              <div id="subtotalText">₹0.00</div>
-            </div>
-            <div class="line">
-              <div class="muted">CGST (<span id="cgstRate">0</span>%)</div>
-              <div id="cgstText">₹0.00</div>
-            </div>
-            <div class="line">
-              <div class="muted">SGST (<span id="sgstRate">0</span>%)</div>
-              <div id="sgstText">₹0.00</div>
-            </div>
-            <div class="line" style="font-weight:700;font-size:18px;border-top:1px solid #eef2f6;margin-top:8px;padding-top:8px">
-              <div>Total</div>
-              <div id="totalText">₹0.00</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <hr style="margin:18px 0;border:none;border-top:1px solid #eef2f6">
-
-      <div class="row" style="align-items:center;justify-content:space-between">
-        <div class="controls top-actions">
-          <button id="saveBtn" class="primary">Save Invoice</button>
-          <button id="printBtn" class="secondary">Generate PDF (Print)</button>
-          <button id="newBtn" class="small-btn">Reset / New</button>
-          <button id="viewSavedBtn" class="small-btn">View Saved Invoices</button>
-        </div>
-
-        <div class="muted">Auto-increment key stored locally in your browser.</div>
-      </div>
+      <div class="signature">Authorised Signatory</div>
     </div>
 
-    <!-- Saved invoices panel (hidden toggle) -->
-    <div id="savedPanel" class="card saved-panel" style="margin-top:16px;display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0;font-size:16px">Saved Invoices</h3>
-        <div>
-          <button id="closeSaved" class="small-btn">Close</button>
-          <button id="exportAll" class="small-btn">Export JSON</button>
-          <button id="clearAllSaved" class="small-btn danger">Clear All</button>
-        </div>
-      </div>
-
-      <div class="saved-list" id="savedList" style="margin-top:12px"></div>
-    </div>
-
-    <footer>
-      <div>Built for Vaada and Associates — static, privacy-friendly. All data stays in your browser.</div>
-    </footer>
+    <div style="margin-top:10px" class="save-note muted">Note: Invoice number will increment after you Save & Print.</div>
   </div>
 
   <script>
-    // ---------- Utilities ----------
-    const $ = (id)=>document.getElementById(id);
-    const formatMoney = n => {
-      const num = Number(n) || 0;
-      return '₹' + num.toFixed(2);
-    };
-    const todayISO = () => {
-      const d = new Date();
-      return d.toISOString().slice(0,10); // yyyy-mm-dd
-    };
+    // Keys
+    const KEY_NEXT = 'vaada_next_invoice';
+    const KEY_SAVED = 'vaada_saved_invoices';
 
-    // ---------- Keys & Defaults ----------
-    const KEY_NEXT = 'vaada_invoice_next';
-    const KEY_SAVED = 'vaada_invoices';
-    const KEY_SETTINGS = 'vaada_settings';
+    // Elements
+    const invoiceNoPreview = document.getElementById('invoiceNoPreview');
+    const invoiceDate = document.getElementById('invoiceDate');
+    const gstRateEl = document.getElementById('gstRate');
+    const addRowBtn = document.getElementById('addRow');
+    const clearRowsBtn = document.getElementById('clearRows');
+    const savePrintBtn = document.getElementById('savePrint');
+    const resetBtn = document.getElementById('reset');
+    const itemsBody = document.getElementById('itemsBody');
+    const taxableText = document.getElementById('taxableText');
+    const cgstText = document.getElementById('cgstText');
+    const sgstText = document.getElementById('sgstText');
+    const totalText = document.getElementById('totalText');
+    const cgstRateSpan = document.getElementById('cgstRate');
+    const sgstRateSpan = document.getElementById('sgstRate');
 
-    // ---------- DOM Elements ----------
-    const invoiceNoEl = $('invoiceNo');
-    const previewInvoice = $('preview-invoice-no');
-    const invoiceDateEl = $('invoiceDate');
-    const dueDateEl = $('dueDate');
-    const itemsBody = $('itemsBody');
-    const addRowBtn = $('addRowBtn');
-    const clearRowsBtn = $('clearRowsBtn');
-    const subtotalText = $('subtotalText');
-    const cgstText = $('cgstText');
-    const sgstText = $('sgstText');
-    const totalText = $('totalText');
-    const gstRateEl = $('gstRate');
-    const cgstRateSpan = $('cgstRate');
-    const sgstRateSpan = $('sgstRate');
-    const saveBtn = $('saveBtn');
-    const printBtn = $('printBtn');
-    const newBtn = $('newBtn');
-    const viewSavedBtn = $('viewSavedBtn');
-    const savedPanel = $('savedPanel');
-    const savedList = $('savedList');
-    const closeSaved = $('closeSaved');
-    const exportAll = $('exportAll');
-    const clearAllSaved = $('clearAllSaved');
-    const logoInput = $('logoInput');
-    const logoPreview = $('logoPreview');
-    const removeLogoBtn = $('removeLogoBtn');
-
-    // Additional fields to save as settings
-    const firmNameEl = $('firmName');
-    const firmAddressEl = $('firmAddress');
-    const firmEmailEl = $('firmEmail');
-    const firmGstinEl = $('firmGstin');
-    const notesEl = $('notes');
-    const clientNameEl = $('clientName');
-    const clientEmailEl = $('clientEmail');
-    const clientGstinEl = $('clientGstin');
-    const clientAddressEl = $('clientAddress');
-
-    // ---------- Init ----------
-    function getNextInvoiceNumber(){
+    // Utils
+    function getNext() {
       const raw = localStorage.getItem(KEY_NEXT);
       let n = raw ? parseInt(raw,10) : 1;
       if (!Number.isFinite(n) || n<1) n = 1;
       return n;
     }
-    function setNextInvoiceNumber(n){
-      localStorage.setItem(KEY_NEXT, String(n));
-    }
-    function bumpInvoiceNumber(){
-      const n = getNextInvoiceNumber()+1;
-      setNextInvoiceNumber(n);
-    }
+    function setNext(n){ localStorage.setItem(KEY_NEXT, String(n)); }
+    function bumpNext(){ setNext(getNext() + 1); }
 
-    function loadSettings(){
-      try{
-        const s = JSON.parse(localStorage.getItem(KEY_SETTINGS) || '{}');
-        if(s.logo) setLogoPreview(s.logo);
-        if(s.gstRate) gstRateEl.value = s.gstRate;
-        if(s.firmName) firmNameEl.value = s.firmName;
-        if(s.firmAddress) firmAddressEl.value = s.firmAddress;
-        if(s.firmEmail) firmEmailEl.value = s.firmEmail;
-        if(s.firmGstin) firmGstinEl.value = s.firmGstin;
-        if(s.notes) notesEl.value = s.notes;
-      }catch(e){}
-    }
-    function saveSettings(){
-      const s = {
-        logo: logoPreview.dataset.logo || null,
-        gstRate: gstRateEl.value,
-        firmName: firmNameEl.value,
-        firmAddress: firmAddressEl.value,
-        firmEmail: firmEmailEl.value,
-        firmGstin: firmGstinEl.value,
-        notes: notesEl.value
-      };
-      localStorage.setItem(KEY_SETTINGS, JSON.stringify(s));
-    }
+    function getSaved(){ try { return JSON.parse(localStorage.getItem(KEY_SAVED) || '[]'); } catch(e){ return []; } }
+    function setSaved(list){ localStorage.setItem(KEY_SAVED, JSON.stringify(list)); }
 
+    function formatINR(v){ const n = Number(v)||0; return '₹' + n.toFixed(2); }
+
+    // initialize invoice number and date
     function init(){
-      // Invoice numbering
-      let n = getNextInvoiceNumber();
-      invoiceNoEl.value = `INV-${n}`;
-      previewInvoice.textContent = invoiceNoEl.value;
-
-      // Dates
-      invoiceDateEl.value = todayISO();
-      const due = new Date(); due.setDate(due.getDate() + 30);
-      dueDateEl.value = due.toISOString().slice(0,10);
-
-      // initial item
-      addRow();
-
-      // load settings and saved invoices
-      loadSettings();
-      updateGSTUI();
-      renderSavedList();
-      recalcAll();
+      const n = getNext();
+      invoiceNoPreview.textContent = 'INV-' + n;
+      const d = new Date();
+      invoiceDate.value = d.toISOString().slice(0,10);
+      addItemRow(); // start with one row
+      updateTotals();
     }
     init();
 
-    // ---------- Logo handling ----------
-    function setLogoPreview(dataUrl){
-      logoPreview.innerHTML = '';
-      if(!dataUrl){
-        logoPreview.textContent = 'LOGO';
-        delete logoPreview.dataset.logo;
-        return;
-      }
-      const img = document.createElement('img');
-      img.src = dataUrl;
-      logoPreview.appendChild(img);
-      logoPreview.dataset.logo = dataUrl;
-    }
-    logoInput.addEventListener('change', async (e)=>{
-      const f = e.target.files && e.target.files[0];
-      if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ()=> {
-        setLogoPreview(reader.result);
-        saveSettings();
-      };
-      reader.readAsDataURL(f);
-    });
-    removeLogoBtn.addEventListener('click', ()=>{
-      logoInput.value='';
-      setLogoPreview(null);
-      saveSettings();
-    });
-
-    // ---------- Items logic ----------
-    function addRow(item = {desc:'', qty:1, rate:0}){
+    // Items row management
+    function addItemRow(data){
+      const idx = itemsBody.children.length + 1;
       const tr = document.createElement('tr');
 
+      // S. No.
+      const tdSn = document.createElement('td');
+      tdSn.className = 'tcenter';
+      tdSn.textContent = idx;
+
+      // Item desc
       const tdDesc = document.createElement('td');
-      const descInput = document.createElement('input');
-      descInput.type='text'; descInput.value = item.desc || '';
-      descInput.placeholder = 'Item description';
-      descInput.addEventListener('input', recalcAll);
-      tdDesc.appendChild(descInput);
+      const desc = document.createElement('input');
+      desc.type = 'text';
+      desc.placeholder = 'Item description';
+      desc.style.width = '100%';
+      desc.className = 'no-outline';
+      desc.value = (data && data.desc) || '';
+      desc.addEventListener('input', updateTotals);
+      tdDesc.appendChild(desc);
 
+      // Qty
       const tdQty = document.createElement('td');
-      const qtyInput = document.createElement('input');
-      qtyInput.type='number'; qtyInput.min = '0'; qtyInput.step='1'; qtyInput.value = item.qty || 1;
-      qtyInput.className='qty';
-      qtyInput.addEventListener('input', recalcAll);
-      tdQty.appendChild(qtyInput);
+      tdQty.className = 'tcenter';
+      const qty = document.createElement('input');
+      qty.type = 'number'; qty.min = '0'; qty.step = '1'; qty.value = (data && data.qty) || 1;
+      qty.style.width = '60px';
+      qty.addEventListener('input', updateTotals);
+      tdQty.appendChild(qty);
 
+      // Rate
       const tdRate = document.createElement('td');
-      const rateInput = document.createElement('input');
-      rateInput.type='number'; rateInput.min='0'; rateInput.step='0.01'; rateInput.value = item.rate || 0;
-      rateInput.className='rate';
-      rateInput.addEventListener('input', recalcAll);
-      tdRate.appendChild(rateInput);
+      tdRate.className = 'tright';
+      const rate = document.createElement('input');
+      rate.type = 'number'; rate.min = '0'; rate.step = '0.01'; rate.value = (data && data.rate) || 0;
+      rate.style.width = '120px';
+      rate.addEventListener('input', updateTotals);
+      tdRate.appendChild(rate);
 
+      // Amount
       const tdAmount = document.createElement('td');
-      tdAmount.className='amount';
-      tdAmount.textContent = formatMoney(0);
+      tdAmount.className = 'tright';
+      tdAmount.textContent = formatINR(0);
 
-      const tdActions = document.createElement('td');
-      const delBtn = document.createElement('button');
-      delBtn.className='small-btn danger';
-      delBtn.textContent = 'Delete';
-      delBtn.addEventListener('click', ()=>{
-        tr.remove();
-        recalcAll();
-      });
-      tdActions.appendChild(delBtn);
-
+      tr.appendChild(tdSn);
       tr.appendChild(tdDesc);
       tr.appendChild(tdQty);
       tr.appendChild(tdRate);
       tr.appendChild(tdAmount);
-      tr.appendChild(tdActions);
 
       itemsBody.appendChild(tr);
-      recalcAll();
+      updateRowNumbers();
+      updateTotals();
+    }
+
+    function updateRowNumbers(){
+      Array.from(itemsBody.children).forEach((tr,i)=>{
+        tr.children[0].textContent = i+1;
+      });
     }
 
     function clearItems(){
-      itemsBody.innerHTML='';
-      addRow();
-      recalcAll();
-    }
-
-    addRowBtn.addEventListener('click', ()=>addRow());
-    clearRowsBtn.addEventListener('click', ()=> {
-      if(confirm('Clear all item rows?')) clearItems();
-    });
-
-    // ---------- Recalculate totals ----------
-    function recalcAll(){
-      // gather items
-      const rows = Array.from(itemsBody.querySelectorAll('tr'));
-      let subtotal = 0;
-      rows.forEach(row=>{
-        const qty = Number(row.querySelector('input[type="number"]').value) || 0;
-        const rate = Number(row.querySelectorAll('input[type="number"]')[1].value) || 0;
-        // ensure arithmetic done correctly
-        const amount = (qty * rate);
-        const amtCell = row.querySelector('td.amount');
-        amtCell.textContent = formatMoney(amount);
-        subtotal += amount;
-      });
-
-      subtotalText.textContent = formatMoney(subtotal);
-
-      const gstRate = Number(gstRateEl.value) || 0;
-      // If gstRate is 0 => no tax
-      let cgst = 0, sgst = 0;
-      if(gstRate > 0){
-        const totalTax = (subtotal * gstRate) / 100;
-        // split evenly for CGST/SGST
-        cgst = totalTax / 2;
-        sgst = totalTax / 2;
-      }
-      cgstText.textContent = formatMoney(cgst);
-      sgstText.textContent = formatMoney(sgst);
-
-      const grand = subtotal + cgst + sgst;
-      totalText.textContent = formatMoney(grand);
-
-      // Update preview invoice number
-      previewInvoice.textContent = invoiceNoEl.value;
-      cgstRateSpan.textContent = (gstRate/2).toFixed(2);
-      sgstRateSpan.textContent = (gstRate/2).toFixed(2);
-
-      // persist settings (gst, logo, firm info)
-      saveSettings();
-    }
-
-    gstRateEl.addEventListener('change', ()=> {
-      updateGSTUI();
-      recalcAll();
-    });
-
-    function updateGSTUI(){
-      const g = Number(gstRateEl.value) || 0;
-      cgstRateSpan.textContent = (g/2).toFixed(2);
-      sgstRateSpan.textContent = (g/2).toFixed(2);
-    }
-
-    // ---------- Save / Load invoices ----------
-    function getSavedInvoices(){
-      try{
-        return JSON.parse(localStorage.getItem(KEY_SAVED) || '[]');
-      }catch(e){
-        return [];
-      }
-    }
-    function setSavedInvoices(list){
-      localStorage.setItem(KEY_SAVED, JSON.stringify(list));
-    }
-
-    function collectInvoiceData(){
-      // collect items array
-      const rows = Array.from(itemsBody.querySelectorAll('tr'));
-      const items = rows.map(row=>{
-        const desc = row.querySelector('td input[type="text"]').value || '';
-        const qty = Number(row.querySelectorAll('input[type="number"]')[0].value) || 0;
-        const rate = Number(row.querySelectorAll('input[type="number"]')[1].value) || 0;
-        const amount = Number((qty * rate).toFixed(2));
-        return {desc, qty, rate, amount};
-      });
-
-      // compute totals exactly as displayed
-      const subtotal = items.reduce((s,i)=>s + i.amount, 0);
-      const gstRate = Number(gstRateEl.value) || 0;
-      const totalTax = (subtotal * gstRate) / 100;
-      const cgst = Number((totalTax/2).toFixed(2));
-      const sgst = Number((totalTax/2).toFixed(2));
-      const grand = Number((subtotal + cgst + sgst).toFixed(2));
-
-      const payload = {
-        id: invoiceNoEl.value,
-        number: invoiceNoEl.value,
-        date: invoiceDateEl.value,
-        dueDate: dueDateEl.value,
-        firm: {
-          name: firmNameEl.value,
-          address: firmAddressEl.value,
-          email: firmEmailEl.value,
-          gstin: firmGstinEl.value,
-          logo: logoPreview.dataset.logo || null
-        },
-        client: {
-          name: clientNameEl.value,
-          email: clientEmailEl.value,
-          gstin: clientGstinEl.value,
-          address: clientAddressEl.value
-        },
-        items,
-        subtotal: Number(subtotal.toFixed(2)),
-        gstRate,
-        cgst,
-        sgst,
-        total: grand,
-        notes: notesEl.value,
-        createdAt: new Date().toISOString()
-      };
-      return payload;
-    }
-
-    saveBtn.addEventListener('click', ()=>{
-      const inv = collectInvoiceData();
-
-      const saved = getSavedInvoices();
-      // if invoice with same id exists, update it
-      const idx = saved.findIndex(s=>s.id === inv.id);
-      if(idx >= 0){
-        if(!confirm('An invoice with this number already exists. Overwrite?')) return;
-        saved[idx] = inv;
-      } else {
-        saved.push(inv);
-      }
-      setSavedInvoices(saved);
-      // bump next invoice number if saving a new invoice
-      const currNum = getNextInvoiceNumber();
-      const nFromInput = Number((inv.number || '').replace(/[^0-9]/g,'') || currNum);
-      if(nFromInput >= currNum) setNextInvoiceNumber(nFromInput + 1);
-
-      alert('Invoice saved locally.');
-      renderSavedList();
-    });
-
-    // ---------- Print ----------
-    printBtn.addEventListener('click', ()=>{
-      // ensure totals updated
-      recalcAll();
-      // hide UI elements in print via CSS @media print
-      // open print
-      window.print();
-    });
-
-    // ---------- New / Reset ----------
-    newBtn.addEventListener('click', ()=>{
-      if(!confirm('Reset this invoice to create a new one? Unsaved changes will be lost.')) return;
-      // set invoice number to next
-      const next = getNextInvoiceNumber();
-      invoiceNoEl.value = `INV-${next}`;
-      previewInvoice.textContent = invoiceNoEl.value;
-      invoiceDateEl.value = todayISO();
-      const due = new Date(); due.setDate(due.getDate() + 30);
-      dueDateEl.value = due.toISOString().slice(0,10);
-      clearItems();
-      // clear client fields
-      clientNameEl.value = '';
-      clientEmailEl.value = '';
-      clientAddressEl.value = '';
-      clientGstinEl.value = '';
-      notesEl.value = '';
-      recalcAll();
-    });
-
-    // ---------- Saved panel UI ----------
-    viewSavedBtn.addEventListener('click', ()=>{
-      savedPanel.style.display = 'block';
-      renderSavedList();
-    });
-    closeSaved.addEventListener('click', ()=> savedPanel.style.display='none');
-
-    function renderSavedList(){
-      const saved = getSavedInvoices();
-      savedList.innerHTML = '';
-      if(!saved.length){
-        savedList.innerHTML = '<div class="note">No invoices saved yet.</div>';
-        return;
-      }
-      // show newest first
-      const list = saved.slice().reverse();
-      list.forEach(inv=>{
-        const item = document.createElement('div');
-        item.className = 'saved-item';
-        const left = document.createElement('div');
-        left.innerHTML = `<div style="font-weight:600">${inv.number}</div>
-                          <div class="note">${inv.client.name || '—'} • ${new Date(inv.createdAt).toLocaleString()}</div>`;
-        const right = document.createElement('div');
-        right.style.display='flex'; right.style.gap='8px';
-        const loadBtn = document.createElement('button'); loadBtn.className='small-btn';
-        loadBtn.textContent='Load'; loadBtn.addEventListener('click', ()=> loadInvoice(inv.id));
-        const downloadBtn = document.createElement('button'); downloadBtn.className='small-btn';
-        downloadBtn.textContent='Download'; downloadBtn.addEventListener('click', ()=> downloadInvoiceJSON(inv));
-        const delBtn = document.createElement('button'); delBtn.className='small-btn danger';
-        delBtn.textContent='Delete'; delBtn.addEventListener('click', ()=>{
-          if(!confirm('Delete this saved invoice?')) return;
-          const all = getSavedInvoices().filter(s=>s.id !== inv.id);
-          setSavedInvoices(all);
-          renderSavedList();
-        });
-        right.appendChild(loadBtn);
-        right.appendChild(downloadBtn);
-        right.appendChild(delBtn);
-        item.appendChild(left);
-        item.appendChild(right);
-        savedList.appendChild(item);
-      });
-    }
-
-    function loadInvoice(id){
-      const saved = getSavedInvoices();
-      const inv = saved.find(s=>s.id === id);
-      if(!inv) return alert('Invoice not found');
-      // populate fields
-      invoiceNoEl.value = inv.number || invoiceNoEl.value;
-      previewInvoice.textContent = invoiceNoEl.value;
-      invoiceDateEl.value = inv.date || todayISO();
-      dueDateEl.value = inv.dueDate || '';
-      firmNameEl.value = inv.firm?.name || firmNameEl.value;
-      firmAddressEl.value = inv.firm?.address || '';
-      firmEmailEl.value = inv.firm?.email || '';
-      firmGstinEl.value = inv.firm?.gstin || '';
-      if(inv.firm?.logo) setLogoPreview(inv.firm.logo);
-      clientNameEl.value = inv.client?.name || '';
-      clientEmailEl.value = inv.client?.email || '';
-      clientGstinEl.value = inv.client?.gstin || '';
-      clientAddressEl.value = inv.client?.address || '';
-      gstRateEl.value = inv.gstRate != null ? inv.gstRate : '0';
-      notesEl.value = inv.notes || '';
-      // populate items
       itemsBody.innerHTML = '';
-      if(inv.items && inv.items.length){
-        inv.items.forEach(it => addRow({desc:it.desc, qty:it.qty, rate:it.rate}));
+      addItemRow();
+      updateTotals();
+    }
+
+    addRowBtn.addEventListener('click', ()=> addItemRow());
+    clearRowsBtn.addEventListener('click', ()=> {
+      if(confirm('Clear all items?')) clearItems();
+    });
+
+    // Calculation
+    function updateTotals(){
+      const rows = Array.from(itemsBody.querySelectorAll('tr'));
+      let taxable = 0;
+      rows.forEach(tr=>{
+        const qty = Number(tr.querySelector('input[type="number"]').value) || 0;
+        const rateInputs = tr.querySelectorAll('input[type="number"]');
+        const rate = rateInputs.length ? Number(rateInputs[rateInputs.length-1].value) || 0 : 0;
+        const amt = qty * rate;
+        tr.children[4].textContent = formatINR(amt);
+        taxable += amt;
+      });
+
+      const gst = Number(gstRateEl.value) || 0;
+      const taxTotal = (taxable * gst) / 100;
+      const cgst = taxTotal / 2;
+      const sgst = taxTotal / 2;
+      taxableText.textContent = formatINR(taxable);
+      cgstText.textContent = formatINR(cgst);
+      sgstText.textContent = formatINR(sgst);
+      totalText.textContent = formatINR(taxable + cgst + sgst);
+
+      cgstRateSpan.textContent = (gst/2).toFixed(2);
+      sgstRateSpan.textContent = (gst/2).toFixed(2);
+    }
+
+    gstRateEl.addEventListener('change', updateTotals);
+
+    // Save & Print (save first, then print, then bump invoice number)
+    savePrintBtn.addEventListener('click', async ()=>{
+      // Collect invoice
+      const invNumber = invoiceNoPreview.textContent;
+      const invoiceData = {
+        id: invNumber,
+        number: invNumber,
+        date: invoiceDate.value,
+        gstRate: Number(gstRateEl.value),
+        items: [],
+        totals: {}
+      };
+      const rows = Array.from(itemsBody.querySelectorAll('tr'));
+      rows.forEach(tr=>{
+        const desc = tr.querySelector('td input[type="text"]').value || '';
+        const qty = Number(tr.querySelectorAll('input[type="number"]')[0].value) || 0;
+        const rate = Number(tr.querySelectorAll('input[type="number"]')[1].value) || 0;
+        invoiceData.items.push({desc, qty, rate, amount: Number((qty*rate).toFixed(2))});
+      });
+
+      // totals
+      const taxable = invoiceData.items.reduce((s,i)=>s + i.amount, 0);
+      const gst = Number(gstRateEl.value) || 0;
+      const taxTotal = +(taxable * gst / 100).toFixed(2);
+      const cgst = +(taxTotal/2).toFixed(2);
+      const sgst = +(taxTotal/2).toFixed(2);
+      const grand = +(taxable + cgst + sgst).toFixed(2);
+      invoiceData.totals = {taxable: +taxable.toFixed(2), cgst, sgst, grand};
+
+      // Save to storage (append)
+      const saved = getSaved();
+      const exists = saved.findIndex(s=>s.id === invoiceData.id);
+      if(exists >= 0){
+        if(!confirm('An invoice with this number already exists. Overwrite?')) return;
+        saved[exists] = invoiceData;
       } else {
-        addRow();
+        saved.push(invoiceData);
       }
-      recalcAll();
-      savedPanel.style.display='none';
-      alert('Invoice loaded. You can edit and re-save or print.');
-    }
+      setSaved(saved);
 
-    function downloadInvoiceJSON(inv){
-      const w = JSON.stringify(inv, null, 2);
-      const blob = new Blob([w], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `${inv.number || 'invoice'}.json`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    exportAll.addEventListener('click', ()=>{
-      const all = getSavedInvoices();
-      if(!all.length) return alert('No saved invoices to export.');
-      const blob = new Blob([JSON.stringify(all, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `vaada_invoices_export_${new Date().toISOString().slice(0,10)}.json`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
+      // Print (open print dialog)
+      // Give a tiny delay to ensure localStorage write has flushed
+      setTimeout(()=>{
+        window.print();
+        // after print dialog closed (or after print called), increment stored next invoice number
+        // (this ensures the printed copy used current number)
+        bumpNext();
+        // update preview to next number for UI
+        invoiceNoPreview.textContent = 'INV-' + getNext();
+      }, 250);
     });
 
-    clearAllSaved.addEventListener('click', ()=>{
-      if(!confirm('Clear ALL saved invoices? This cannot be undone.')) return;
-      localStorage.removeItem(KEY_SAVED);
-      renderSavedList();
+    // Reset button (clears items and keeps invoice number same)
+    resetBtn.addEventListener('click', ()=>{
+      if(!confirm('Reset current invoice (items cleared)?')) return;
+      clearItems();
+      const next = getNext();
+      invoiceNoPreview.textContent = 'INV-' + next;
+      const d = new Date(); invoiceDate.value = d.toISOString().slice(0,10);
+      gstRateEl.value = '18';
+      updateTotals();
     });
 
-    // ---------- load saved settings periodically ----------
-    setInterval(()=>saveSettings(), 2000);
-
-    // ---------- Update totals when any input changes ----------
+    // Keep totals in sync if user edits numbers manually with keyboard
     document.addEventListener('input', (e)=>{
-      // only recalc when relevant inputs change to avoid overwork
-      if(e.target.closest('#itemsTable') || e.target === gstRateEl || e.target.type === 'date' || e.target === notesEl){
-        recalcAll();
-      }
-      if([firmNameEl, firmAddressEl, firmEmailEl, firmGstinEl, notesEl].includes(e.target)) saveSettings();
-      // invoice number edit should update preview
-      if(e.target === invoiceNoEl) previewInvoice.textContent = invoiceNoEl.value;
-    });
-
-    // Keep saved list in sync if storage changes in another tab
-    window.addEventListener('storage', (e)=>{
-      if(e.key === KEY_SAVED || e.key === KEY_SETTINGS || e.key === KEY_NEXT){
-        renderSavedList();
-        loadSettings();
+      if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')){
+        updateTotals();
       }
     });
 
-    // Prevent accidental numeric inputs to show stepper arrows ugly on mobile? Left as default.
-    // ---------- End ----------
+    // Keep rows numbering correct after any change
+    new MutationObserver(updateRowNumbers).observe(itemsBody, {childList:true, subtree:false});
   </script>
 </body>
 </html>
