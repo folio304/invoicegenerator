@@ -1,363 +1,171 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vaada and Associates — Invoice</title>
-  <style>
-    /* Classic invoice style similar to provided sample */
-    :root{--paper:#fff;--border:#000;--muted:#444;--maxw:900px}
-    body{background:#f6f6f6;font-family: "Times New Roman", Georgia, serif;padding:18px;color:#111}
-    .wrap{max-width:var(--maxw);margin:0 auto;background:var(--paper);border:2px solid var(--border);padding:10px 14px}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:6px;margin-bottom:8px}
-    .firm{font-weight:700;letter-spacing:1px}
-    .firm h2{margin:0;font-size:22px}
-    .firm .sub{font-size:13px;margin-top:4px}
-    .meta{text-align:right}
-    .meta .label{font-size:12px;color:var(--muted)}
-    .meta .val{font-weight:700}
-
-    .top-row{display:flex;justify-content:space-between;margin-top:8px}
-    .invoice-meta{border:1px solid var(--border);padding:6px;min-width:260px}
-    .invoice-meta .row{display:flex;justify-content:space-between;margin-bottom:6px}
-    .customer-line{border:1px solid var(--border);padding:8px;margin-top:10px;text-transform:uppercase;font-weight:700;letter-spacing:0.6px}
-
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    table th, table td{border:1px solid var(--border);padding:6px}
-    table th{text-align:left;font-weight:700}
-    .tcenter{text-align:center}
-    .tright{text-align:right}
-    .muted{color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
-    .btn{padding:8px 12px;border-radius:4px;border:1px solid #222;background:#fff;cursor:pointer}
-    .btn.primary{background:#111;color:#fff;border-color:#111}
-    .small{font-size:13px;padding:6px 8px}
-
-    /* Inputs */
-    input[type="text"], input[type="number"], select{font-family:inherit;padding:6px;border:1px solid #222;background:transparent}
-    input[type="number"]{text-align:right}
-    .no-outline:focus{outline:2px dashed #ddd}
-
-    .totals{margin-top:8px;display:flex;justify-content:flex-end}
-    .totals .box{width:320px;border-top:1px solid var(--border);padding-top:8px}
-    .totals .line{display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px dotted #999}
-    .bold{font-weight:700}
-
-    .footer{margin-top:16px;border-top:2px solid var(--border);padding-top:8px;display:flex;justify-content:space-between;align-items:center}
-    .signature{width:240px;text-align:center;border-top:1px solid #111;padding-top:6px;font-size:14px}
-    .thank{font-size:15px;font-weight:700}
-
-    /* Print: hide controls and page edges */
-    @media print{
-      body{background:white}
-      .controls, .save-note {display:none}
-      .wrap{border:0;padding:0;max-width:100%}
-    }
-
-    /* responsive */
-    @media (max-width:640px){
-      .top-row{flex-direction:column;gap:8px}
-      .invoice-meta{min-width:unset}
-      .totals .box{width:100%}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaada and Associates — Invoice</title>
+<style>
+  :root{--paper:#fff;--border:#000;--muted:#444;--maxw:900px}
+  body{background:#f6f6f6;font-family:"Times New Roman",serif;padding:18px;color:#111}
+  .wrap{max-width:var(--maxw);margin:0 auto;background:var(--paper);border:2px solid var(--border);padding:10px 14px}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:6px;margin-bottom:8px}
+  .firm h2{margin:0;font-size:22px}
+  .firm .sub{font-size:13px;margin-top:4px}
+  .meta{text-align:right}
+  .meta .label{font-size:12px;color:var(--muted)}
+  .meta .val{font-weight:700}
+  .customer-line{border:1px solid var(--border);padding:8px;margin-top:10px;text-transform:uppercase;font-weight:700;letter-spacing:.6px}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{border:1px solid var(--border);padding:6px}
+  th{text-align:left}
+  .tcenter{text-align:center}
+  .tright{text-align:right}
+  .muted{color:var(--muted);font-size:13px}
+  input[type="text"],input[type="number"],select{font-family:inherit;padding:6px;border:1px solid #222;background:transparent}
+  input[type="number"]{text-align:right}
+  .totals{margin-top:8px;display:flex;justify-content:flex-end}
+  .totals .box{width:320px;border-top:1px solid var(--border);padding-top:8px}
+  .totals .line{display:flex;justify-content:space-between;padding:6px 2px;border-bottom:1px dotted #999}
+  .bold{font-weight:700}
+  .footer{margin-top:16px;border-top:2px solid var(--border);padding-top:8px;display:flex;justify-content:space-between;align-items:center}
+  .signature{width:240px;text-align:center;border-top:1px solid #111;padding-top:6px;font-size:14px}
+  .thank{font-size:15px;font-weight:700}
+  .bottom-controls{max-width:var(--maxw);margin:18px auto 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  .btn{padding:8px 12px;border-radius:4px;border:1px solid #222;background:#fff;cursor:pointer;font-family:inherit}
+  .btn.primary{background:#111;color:#fff}
+  .small{font-size:13px;padding:6px 10px}
+  @media print{
+    body{background:white}
+    .bottom-controls{display:none}
+    .wrap{border:0;padding:0;max-width:100%}
+  }
+</style>
 </head>
 <body>
-  <div class="wrap" id="invoiceWrap">
-    <!-- Header (locked firm details) -->
-    <div class="header">
-      <div class="firm">
-        <h2>VAADA AND ASSOCIATES</h2>
-        <div class="sub">GSTIN: AFBOA2040N1Z3</div>
-        <div class="sub">Raipur, C.G.</div>
-        <div class="sub">Contact: 7828780780</div>
-      </div>
-
-      <div class="meta">
-        <div class="label">Invoice No.</div>
-        <div class="val" id="invoiceNoPreview">INV-1</div>
-        <div style="height:10px"></div>
-        <div class="label">Date</div>
-        <div><input id="invoiceDate" type="date"></div>
-      </div>
+<div class="wrap" id="invoiceWrap">
+  <div class="header">
+    <div class="firm">
+      <h2>VAADA AND ASSOCIATES</h2>
+      <div class="sub">GSTIN: AFBOA2040N1Z3</div>
+      <div class="sub">Raipur, C.G.</div>
+      <div class="sub">Contact: 7828780780</div>
     </div>
-
-    <!-- Customer name blank for manual entry -->
-    <div class="customer-line">
-      CUSTOMER NAME: ___________________________________________
+    <div class="meta">
+      <div class="label">Invoice No.</div>
+      <div class="val" id="invoiceNoPreview">INV-1</div>
+      <div style="height:10px"></div>
+      <div class="label">Date</div>
+      <div><input id="invoiceDate" type="date"></div>
     </div>
-
-    <!-- Items -->
-    <table aria-label="items">
-      <thead>
-        <tr>
-          <th style="width:6%">S. NO.</th>
-          <th style="width:54%">Item / Remark</th>
-          <th style="width:12%" class="tcenter">QTY</th>
-          <th style="width:14%" class="tright">RATE</th>
-          <th style="width:14%" class="tright">AMOUNT</th>
-        </tr>
-      </thead>
-      <tbody id="itemsBody">
-        <!-- rows dynamically inserted -->
-      </tbody>
-    </table>
-
-    <div class="controls">
-      <button id="addRow" class="btn small">+ Add Row</button>
-      <button id="clearRows" class="btn small">Clear Items</button>
-
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <label class="muted">GST:</label>
-        <select id="gstRate" class="small">
-          <option value="0">No GST</option>
-          <option value="5">5%</option>
-          <option value="18" selected>18%</option>
-        </select>
-        <button id="savePrint" class="btn primary">Save &amp; Print</button>
-        <button id="reset" class="btn">Reset</button>
-      </div>
-    </div>
-
-    <!-- Totals box -->
-    <div class="totals">
-      <div class="box">
-        <div class="line"><div class="muted">Taxable Value</div><div id="taxableText" class="tright">₹0.00</div></div>
-        <div class="line"><div class="muted">CGST @ <span id="cgstRate">0</span>%</div><div id="cgstText" class="tright">₹0.00</div></div>
-        <div class="line"><div class="muted">SGST @ <span id="sgstRate">0</span>%</div><div id="sgstText" class="tright">₹0.00</div></div>
-        <div class="line bold" style="border-top:2px solid #000"><div>Total</div><div id="totalText" class="tright">₹0.00</div></div>
-      </div>
-    </div>
-
-    <div class="footer">
-      <div>
-        <div class="muted">पुनः पधारें धन्यवाद !</div>
-      </div>
-      <div class="signature">Authorised Signatory</div>
-    </div>
-
-    <div style="margin-top:10px" class="save-note muted">Note: Invoice number will increment after you Save & Print.</div>
   </div>
 
-  <script>
-    // Keys
-    const KEY_NEXT = 'vaada_next_invoice';
-    const KEY_SAVED = 'vaada_saved_invoices';
+  <div class="customer-line">
+    CUSTOMER NAME: ___________________________________________
+  </div>
 
-    // Elements
-    const invoiceNoPreview = document.getElementById('invoiceNoPreview');
-    const invoiceDate = document.getElementById('invoiceDate');
-    const gstRateEl = document.getElementById('gstRate');
-    const addRowBtn = document.getElementById('addRow');
-    const clearRowsBtn = document.getElementById('clearRows');
-    const savePrintBtn = document.getElementById('savePrint');
-    const resetBtn = document.getElementById('reset');
-    const itemsBody = document.getElementById('itemsBody');
-    const taxableText = document.getElementById('taxableText');
-    const cgstText = document.getElementById('cgstText');
-    const sgstText = document.getElementById('sgstText');
-    const totalText = document.getElementById('totalText');
-    const cgstRateSpan = document.getElementById('cgstRate');
-    const sgstRateSpan = document.getElementById('sgstRate');
+  <table>
+    <thead>
+      <tr>
+        <th style="width:6%">S. NO.</th>
+        <th style="width:54%">Item / Remark</th>
+        <th style="width:12%" class="tcenter">QTY</th>
+        <th style="width:14%" class="tright">RATE</th>
+        <th style="width:14%" class="tright">AMOUNT</th>
+      </tr>
+    </thead>
+    <tbody id="itemsBody"></tbody>
+  </table>
 
-    // Utils
-    function getNext() {
-      const raw = localStorage.getItem(KEY_NEXT);
-      let n = raw ? parseInt(raw,10) : 1;
-      if (!Number.isFinite(n) || n<1) n = 1;
-      return n;
-    }
-    function setNext(n){ localStorage.setItem(KEY_NEXT, String(n)); }
-    function bumpNext(){ setNext(getNext() + 1); }
+  <div class="totals">
+    <div class="box">
+      <div class="line"><div class="muted">Taxable Value</div><div id="taxableText" class="tright">₹0.00</div></div>
+      <div class="line"><div class="muted">CGST @ <span id="cgstRate">0</span>%</div><div id="cgstText" class="tright">₹0.00</div></div>
+      <div class="line"><div class="muted">SGST @ <span id="sgstRate">0</span>%</div><div id="sgstText" class="tright">₹0.00</div></div>
+      <div class="line bold" style="border-top:2px solid #000"><div>Total</div><div id="totalText" class="tright">₹0.00</div></div>
+    </div>
+  </div>
 
-    function getSaved(){ try { return JSON.parse(localStorage.getItem(KEY_SAVED) || '[]'); } catch(e){ return []; } }
-    function setSaved(list){ localStorage.setItem(KEY_SAVED, JSON.stringify(list)); }
+  <div class="footer">
+    <div class="muted">पुनः पधारें धन्यवाद !</div>
+    <div class="signature">Authorised Signatory</div>
+  </div>
+</div>
 
-    function formatINR(v){ const n = Number(v)||0; return '₹' + n.toFixed(2); }
+<!-- BOTTOM TOOLBAR -->
+<div class="bottom-controls">
+  <button id="addRow" class="btn small">+ Add Row</button>
+  <button id="clearRows" class="btn small">Clear Items</button>
+  <label class="muted">GST:</label>
+  <select id="gstRate" class="small">
+    <option value="0">No GST</option>
+    <option value="5">5%</option>
+    <option value="18" selected>18%</option>
+  </select>
+  <button id="savePrint" class="btn primary">Save &amp; Print</button>
+  <button id="reset" class="btn">Reset</button>
+</div>
 
-    // initialize invoice number and date
-    function init(){
-      const n = getNext();
-      invoiceNoPreview.textContent = 'INV-' + n;
-      const d = new Date();
-      invoiceDate.value = d.toISOString().slice(0,10);
-      addItemRow(); // start with one row
-      updateTotals();
-    }
-    init();
+<script>
+const KEY_NEXT='vaada_next_invoice',KEY_SAVED='vaada_saved_invoices';
+const invoiceNoPreview=document.getElementById('invoiceNoPreview'),
+invoiceDate=document.getElementById('invoiceDate'),
+gstRateEl=document.getElementById('gstRate'),
+addRowBtn=document.getElementById('addRow'),
+clearRowsBtn=document.getElementById('clearRows'),
+savePrintBtn=document.getElementById('savePrint'),
+resetBtn=document.getElementById('reset'),
+itemsBody=document.getElementById('itemsBody'),
+taxableText=document.getElementById('taxableText'),
+cgstText=document.getElementById('cgstText'),
+sgstText=document.getElementById('sgstText'),
+totalText=document.getElementById('totalText'),
+cgstRateSpan=document.getElementById('cgstRate'),
+sgstRateSpan=document.getElementById('sgstRate');
 
-    // Items row management
-    function addItemRow(data){
-      const idx = itemsBody.children.length + 1;
-      const tr = document.createElement('tr');
+function getNext(){let r=localStorage.getItem(KEY_NEXT);let n=r?parseInt(r,10):1;if(!Number.isFinite(n)||n<1)n=1;return n}
+function setNext(n){localStorage.setItem(KEY_NEXT,String(n))}
+function bumpNext(){setNext(getNext()+1)}
+function formatINR(v){return '₹'+(Number(v)||0).toFixed(2)}
+function init(){const n=getNext();invoiceNoPreview.textContent='INV-'+n;const d=new Date();invoiceDate.value=d.toISOString().slice(0,10);addItemRow();updateTotals()}
+init();
 
-      // S. No.
-      const tdSn = document.createElement('td');
-      tdSn.className = 'tcenter';
-      tdSn.textContent = idx;
+function addItemRow(data){const idx=itemsBody.children.length+1,tr=document.createElement('tr');
+const td1=document.createElement('td');td1.className='tcenter';td1.textContent=idx;
+const td2=document.createElement('td');const desc=document.createElement('input');desc.type='text';desc.placeholder='Item description';desc.style.width='100%';desc.value=data?.desc||'';td2.appendChild(desc);
+const td3=document.createElement('td');td3.className='tcenter';const qty=document.createElement('input');qty.type='number';qty.min='0';qty.step='1';qty.value=data?.qty||1;qty.style.width='60px';td3.appendChild(qty);
+const td4=document.createElement('td');td4.className='tright';const rate=document.createElement('input');rate.type='number';rate.min='0';rate.step='0.01';rate.value=data?.rate||0;rate.style.width='120px';td4.appendChild(rate);
+const td5=document.createElement('td');td5.className='tright';td5.textContent=formatINR(0);
+[desc,qty,rate].forEach(el=>el.addEventListener('input',updateTotals));
+tr.append(td1,td2,td3,td4,td5);itemsBody.appendChild(tr);updateRowNumbers();updateTotals()}
+function updateRowNumbers(){Array.from(itemsBody.children).forEach((tr,i)=>tr.children[0].textContent=i+1)}
+function clearItems(){itemsBody.innerHTML='';addItemRow();updateTotals()}
+addRowBtn.onclick=()=>addItemRow();
+clearRowsBtn.onclick=()=>{if(confirm('Clear all items?'))clearItems()}
 
-      // Item desc
-      const tdDesc = document.createElement('td');
-      const desc = document.createElement('input');
-      desc.type = 'text';
-      desc.placeholder = 'Item description';
-      desc.style.width = '100%';
-      desc.className = 'no-outline';
-      desc.value = (data && data.desc) || '';
-      desc.addEventListener('input', updateTotals);
-      tdDesc.appendChild(desc);
+function updateTotals(){let taxable=0;Array.from(itemsBody.children).forEach(tr=>{
+const qty=Number(tr.querySelectorAll('input[type="number"]')[0].value)||0;
+const rate=Number(tr.querySelectorAll('input[type="number"]')[1].value)||0;
+const amt=qty*rate;tr.children[4].textContent=formatINR(amt);taxable+=amt});
+const gst=Number(gstRateEl.value)||0;
+const taxTotal=taxable*gst/100,cgst=taxTotal/2,sgst=taxTotal/2;
+taxableText.textContent=formatINR(taxable);
+cgstText.textContent=formatINR(cgst);
+sgstText.textContent=formatINR(sgst);
+totalText.textContent=formatINR(taxable+cgst+sgst);
+cgstRateSpan.textContent=(gst/2).toFixed(2);
+sgstRateSpan.textContent=(gst/2).toFixed(2);
+}
+gstRateEl.onchange=updateTotals;
 
-      // Qty
-      const tdQty = document.createElement('td');
-      tdQty.className = 'tcenter';
-      const qty = document.createElement('input');
-      qty.type = 'number'; qty.min = '0'; qty.step = '1'; qty.value = (data && data.qty) || 1;
-      qty.style.width = '60px';
-      qty.addEventListener('input', updateTotals);
-      tdQty.appendChild(qty);
-
-      // Rate
-      const tdRate = document.createElement('td');
-      tdRate.className = 'tright';
-      const rate = document.createElement('input');
-      rate.type = 'number'; rate.min = '0'; rate.step = '0.01'; rate.value = (data && data.rate) || 0;
-      rate.style.width = '120px';
-      rate.addEventListener('input', updateTotals);
-      tdRate.appendChild(rate);
-
-      // Amount
-      const tdAmount = document.createElement('td');
-      tdAmount.className = 'tright';
-      tdAmount.textContent = formatINR(0);
-
-      tr.appendChild(tdSn);
-      tr.appendChild(tdDesc);
-      tr.appendChild(tdQty);
-      tr.appendChild(tdRate);
-      tr.appendChild(tdAmount);
-
-      itemsBody.appendChild(tr);
-      updateRowNumbers();
-      updateTotals();
-    }
-
-    function updateRowNumbers(){
-      Array.from(itemsBody.children).forEach((tr,i)=>{
-        tr.children[0].textContent = i+1;
-      });
-    }
-
-    function clearItems(){
-      itemsBody.innerHTML = '';
-      addItemRow();
-      updateTotals();
-    }
-
-    addRowBtn.addEventListener('click', ()=> addItemRow());
-    clearRowsBtn.addEventListener('click', ()=> {
-      if(confirm('Clear all items?')) clearItems();
-    });
-
-    // Calculation
-    function updateTotals(){
-      const rows = Array.from(itemsBody.querySelectorAll('tr'));
-      let taxable = 0;
-      rows.forEach(tr=>{
-        const qty = Number(tr.querySelector('input[type="number"]').value) || 0;
-        const rateInputs = tr.querySelectorAll('input[type="number"]');
-        const rate = rateInputs.length ? Number(rateInputs[rateInputs.length-1].value) || 0 : 0;
-        const amt = qty * rate;
-        tr.children[4].textContent = formatINR(amt);
-        taxable += amt;
-      });
-
-      const gst = Number(gstRateEl.value) || 0;
-      const taxTotal = (taxable * gst) / 100;
-      const cgst = taxTotal / 2;
-      const sgst = taxTotal / 2;
-      taxableText.textContent = formatINR(taxable);
-      cgstText.textContent = formatINR(cgst);
-      sgstText.textContent = formatINR(sgst);
-      totalText.textContent = formatINR(taxable + cgst + sgst);
-
-      cgstRateSpan.textContent = (gst/2).toFixed(2);
-      sgstRateSpan.textContent = (gst/2).toFixed(2);
-    }
-
-    gstRateEl.addEventListener('change', updateTotals);
-
-    // Save & Print (save first, then print, then bump invoice number)
-    savePrintBtn.addEventListener('click', async ()=>{
-      // Collect invoice
-      const invNumber = invoiceNoPreview.textContent;
-      const invoiceData = {
-        id: invNumber,
-        number: invNumber,
-        date: invoiceDate.value,
-        gstRate: Number(gstRateEl.value),
-        items: [],
-        totals: {}
-      };
-      const rows = Array.from(itemsBody.querySelectorAll('tr'));
-      rows.forEach(tr=>{
-        const desc = tr.querySelector('td input[type="text"]').value || '';
-        const qty = Number(tr.querySelectorAll('input[type="number"]')[0].value) || 0;
-        const rate = Number(tr.querySelectorAll('input[type="number"]')[1].value) || 0;
-        invoiceData.items.push({desc, qty, rate, amount: Number((qty*rate).toFixed(2))});
-      });
-
-      // totals
-      const taxable = invoiceData.items.reduce((s,i)=>s + i.amount, 0);
-      const gst = Number(gstRateEl.value) || 0;
-      const taxTotal = +(taxable * gst / 100).toFixed(2);
-      const cgst = +(taxTotal/2).toFixed(2);
-      const sgst = +(taxTotal/2).toFixed(2);
-      const grand = +(taxable + cgst + sgst).toFixed(2);
-      invoiceData.totals = {taxable: +taxable.toFixed(2), cgst, sgst, grand};
-
-      // Save to storage (append)
-      const saved = getSaved();
-      const exists = saved.findIndex(s=>s.id === invoiceData.id);
-      if(exists >= 0){
-        if(!confirm('An invoice with this number already exists. Overwrite?')) return;
-        saved[exists] = invoiceData;
-      } else {
-        saved.push(invoiceData);
-      }
-      setSaved(saved);
-
-      // Print (open print dialog)
-      // Give a tiny delay to ensure localStorage write has flushed
-      setTimeout(()=>{
-        window.print();
-        // after print dialog closed (or after print called), increment stored next invoice number
-        // (this ensures the printed copy used current number)
-        bumpNext();
-        // update preview to next number for UI
-        invoiceNoPreview.textContent = 'INV-' + getNext();
-      }, 250);
-    });
-
-    // Reset button (clears items and keeps invoice number same)
-    resetBtn.addEventListener('click', ()=>{
-      if(!confirm('Reset current invoice (items cleared)?')) return;
-      clearItems();
-      const next = getNext();
-      invoiceNoPreview.textContent = 'INV-' + next;
-      const d = new Date(); invoiceDate.value = d.toISOString().slice(0,10);
-      gstRateEl.value = '18';
-      updateTotals();
-    });
-
-    // Keep totals in sync if user edits numbers manually with keyboard
-    document.addEventListener('input', (e)=>{
-      if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')){
-        updateTotals();
-      }
-    });
-
-    // Keep rows numbering correct after any change
-    new MutationObserver(updateRowNumbers).observe(itemsBody, {childList:true, subtree:false});
-  </script>
+savePrintBtn.onclick=()=>{const invNumber=invoiceNoPreview.textContent;window.print();
+bumpNext();setTimeout(()=>resetInvoice(true),400)}
+function resetInvoice(newNum=false){
+clearItems();const n=newNum?getNext():getNext()-1;
+invoiceNoPreview.textContent='INV-'+n;
+const d=new Date();invoiceDate.value=d.toISOString().slice(0,10);
+gstRateEl.value='18';updateTotals()
+}
+resetBtn.onclick=()=>{if(confirm('Reset invoice?'))resetInvoice()}
+</script>
 </body>
 </html>
